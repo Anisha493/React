@@ -1,0 +1,6 @@
+npm init
+
+type= "commonjs" => module
+
+npm i express
+

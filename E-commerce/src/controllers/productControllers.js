@@ -44,4 +44,27 @@ const getAllProductById =async (req,res) => {
   res.status(200).json({message:"get my singleProduct", data});
 }
 
-export {createProduct, getAllProduct, getAllProductById};
+const deleteProductById =async (req,res) => {
+  try{
+    const id = req.params.id;
+  const data = await Product.findByIdAndDelete(id);
+  res.status(200).json({message:"Product deleted Successfully"});
+  } catch(error){
+    console.log(error.message)
+    res.status(400).send("Error occurred while trying to delete")
+  }
+}
+
+const updateProduct = async (req,res) => {
+    try{
+        const id = req.params.id;
+        //const {ram,rom,productName,description,price,gen, brand}=req.body
+        const data = await Product.findByIdAndUpdate(id,req.body,{new:true});
+        res.status(400).json({data, message:"Product updated Successfully"});
+    } catch (error){
+        console.log(error.message)
+        res.status(400).send(error.message);
+    } 
+}
+export {createProduct, getAllProduct, getAllProductById, deleteProductById, 
+    updateProduct};

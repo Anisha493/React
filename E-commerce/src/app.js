@@ -1,5 +1,6 @@
 import express from 'express';
 import productRoutes from './routes/productRoutes.js'
+import authRoute from './routes/authRoute.js'
 import connectDb from './config/database.js';
 
 const app = express()
@@ -14,6 +15,7 @@ app.get("/hello",(req, res)=>{
 })
 
 app.use('/product',productRoutes)
+app.use('/auth', authRoute)
 
 app.listen(4000, () => {
     console.log("port started successfully")

@@ -31,9 +31,29 @@ const createProduct = async (req,res)=>{
 
 const getAllProduct = async (req,res)=>{
     try{
-        const data = await Product.find()
+        const query = req.query
+        //console.log(query)
+        
+
+        const sort =JSON.parse(req.query.sort || '{}')
+        console.log(sort)
+       
+
+        const filter = {}
+        //console.log(filter)
+        
+        //if(req.query.brand){filter.brand = {$in: req.query.brand.split(',')} }
+        //console.log(filter)
+
+         
+        //return res.send(filter)
+
+        //brand :'Acer'
+        //brand:{$in :['Acer', 'Dell']}
+        const data = await Product.find(filter).sort(sort).limit(5).skip(5)
         res.status(200).json({data})
-    } catch{
+        
+    } catch(error){
         console.log(error.message)
         res.status(400).send(error.message)
     }

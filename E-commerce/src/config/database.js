@@ -3,7 +3,7 @@ import User from "../models/User.js";
 
 const  connectDb = async()=>{
     try{
-    mongoose.connect('mongodb+srv://np05cp4a230073:nabinarai@cluster0.okl2q5y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    mongoose.connect('mongodb+srv://user:user@cluster0.okl2q5y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
     console.log ("database connected successfully")
 
     const adminExist = await User.findOne({email: "admin@gmail.com"})

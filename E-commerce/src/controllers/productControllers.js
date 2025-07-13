@@ -37,9 +37,54 @@ const getAllProduct = async (req,res)=>{
 
         const sort =JSON.parse(req.query.sort || '{}')
         console.log(sort)
+        let filter ={};
+        console.log(query.ram);
+        if (query.productName){
+            filter.productName ={
+                $regex:query.productName,
+                $options:'i'
+            };
+        }
+        if (query.description){
+            filter.description ={
+                $regex:query.description,
+                $options:'i'
+            };
+        }
+        if (query.gen){
+            filter.gen ={
+                $in: query.gen.split(","),
+            };
+        }
+        if (query.ram){
+            filter.ram ={
+                $in: query.ram.split(","),
+            };
+        }
+        if (query.rom){
+            filter.rom ={
+                $in: query.rom.split(","),
+            };
+        }
+        if (query.brand){
+            filter.brand ={
+                $in:query.brand.split(","),
+            };
+        }
+        if (query.price){
+            const nums =query.price.split(",")
+            const from = nums[0];
+            const to = nums[nums.length-1];
+            filter.price ={
+                $gte: from,
+                $lte: to
+            };
+        }
+
+
        
 
-        const filter = {}
+        // const filter = {}
         //console.log(filter)
         
         //if(req.query.brand){filter.brand = {$in: req.query.brand.split(',')} }
@@ -50,7 +95,7 @@ const getAllProduct = async (req,res)=>{
 
         //brand :'Acer'
         //brand:{$in :['Acer', 'Dell']}
-        const data = await Product.find(filter).sort(sort).limit(5).skip(5)
+        const data = await Product.find(filter).sort(sort)
         res.status(200).json({data})
         
     } catch(error){

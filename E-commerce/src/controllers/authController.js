@@ -1,5 +1,7 @@
 import User from '../models/User.js'; 
 import jwt from 'jsonwebtoken';
+import generateOtp from '../config/generateOtp.js';
+import Otp from '../models/Otp.js';
 
 const register = async (req,res) =>{
     try{
@@ -58,7 +60,33 @@ res.status(200).json({message: "userLoggedIN Successfully", token})
     console.log(error.message)
     res.status(400).send(error.message)
 }
+}
+
+const forgotPassword = async (req, res) =>{
+    try{
+        const {email} = req.body
+
+        if(!email){
+            throw new Error("Email is required")
+        }
+
+        const doesUserExist = await User.findOne({email});
+        if(!doesUserExist){
+         throw new Error("User does not exist")
+        }
+        const otp = generateOtp();
+
+        const data = await Otp.create({
+            email,
+            otp,
+        })
+        
+        res.json({message: "Otp sent successfully", data});
+    } catch(error){
+        console.log(error.message)
+        res.send(error.message)
     }
+};
 
 
-export {register, login};
+export {register, login, forgotPassword};

@@ -2,6 +2,8 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import generateOtp from '../config/generateOtp.js';
 import Otp from '../models/Otp.js';
+import {sendMail} from '../utils/sendMail.js';
+
 
 const register = async (req,res) =>{
     try{
@@ -81,7 +83,7 @@ const forgotPassword = async (req, res) =>{
             otp,
         });
 
-        sendMail("nogepa5391@coderdir.com", "Hello")
+        sendMail(email, `Your otp is`, otp)
         
         res.json({message: "Otp sent successfully", data});
     } catch(error){

@@ -8,8 +8,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Wrap in an async IIFE so we can use await.
-const sendMail = async (email,subject,message) => {
+// Wrap in an async IIFE so we can use the await keyword.
+const sendMail = async (email, subject, message) => {
   const info = await transporter.sendMail({
     from: '"Anisha Karki" <np05cp4a230070@iic.edu.np>',
     to: email,

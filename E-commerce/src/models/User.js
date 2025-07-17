@@ -21,8 +21,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["ADMIN", "CUSTOMER"],
         default: "CUSTOMER"
-    }
-
+    },
+     isOtpVerified:{
+        type:Boolean,
+        default:false
+     }
 }, {
     timestamps: true
 })

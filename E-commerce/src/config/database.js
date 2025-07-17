@@ -1,14 +1,13 @@
 import mongoose from "mongoose";
 import User from "../models/User.js";
+import bcrypt from "bcrypt";
 
-const  connectDb = async()=>{
+const connectDb = async()=>{
     try{
-    mongoose.connect('mongodb+srv://user:user@cluster0.okl2q5y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-    console.log ("database connected successfully")
-
-    const adminExist = await User.findOne({email: "admin@gmail.com"})
-    console.log(adminExist)
-
+    await mongoose.connect('mongodb+srv://user:user@cluster0.n2m4uuh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    console.log("database connected successfully")
+    const adminExist = await User.findOne({role: "ADMIN"})
+    const hashedPassword = await bcrypt.hash("admin123", 10);
     if(adminExist){
         console.log("Admin already exists")
         return
@@ -16,9 +15,9 @@ const  connectDb = async()=>{
         await User.create({
             userName: "AdminUser",
             email: "admin@gmail.com",
-            password: "admin123",
+            password: hashedPassword,
             role: "ADMIN"
-        })  
+        })
         console.log("Admin seeded successfully")
     }
 
@@ -26,4 +25,4 @@ const  connectDb = async()=>{
         console.log(error.message)
     }
 }
-export default connectDb;
+export default connectDb;

@@ -6,7 +6,7 @@ const connectDb = async()=>{
     try{
     await mongoose.connect('mongodb+srv://user:user@cluster0.n2m4uuh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
     console.log("database connected successfully")
-    const adminExist = await User.findOne({role: "ADMIN"})
+    const adminExist = await User.findOne({email: "admin@gmail.com"})
     const hashedPassword = await bcrypt.hash("admin123", 10);
     if(adminExist){
         console.log("Admin already exists")

@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import generateOtp from '../config/generateOtp.js';
 import Otp from '../models/Otp.js';
+import bcrypt from "bcrypt";
 import {sendMail} from '../utils/sendMail.js';
 
 
@@ -15,17 +16,19 @@ const register = async (req,res) =>{
      if(password !== confirmPassword){
         throw new Error("Password don't match")
      }
-     const userFound = await User.find({email: email})
+     const userFound = await User.findOne({email: email})
      // userFound =[ {}]
-     if(userFound.length > 0)
+     if(userFound)
      {
         throw new Error("User already exist")
      }
 
-     const data = User.create({
+     const hashedPassword = await bcrypt.hash(password, 10);
+
+     const data = await User.create({
      userName,
      email,
-     password,
+     password: hashedPassword,
      phone
      })
      res.status(200).json({message:"user registered successfully" , data})
@@ -38,27 +41,30 @@ const register = async (req,res) =>{
 const login = async (req,res) =>{
     try{
         const {email, password}= req.body
-    const userExist = await User.findOne({email: email})
+        const userExist = await User.findOne({email: email})
     
-    if (!userExist){throw new Error("Invalid User")}
-    
-    console.log(userExist.password,password)
-     if(password !== userExist.password){throw new Error("Invalid Credentials")}
+        if (!userExist)
+        {throw new Error("Invalid User")}
+       
+        const isPasswordMatched = await bcrypt.compare(password, userExist.password)
+        // console.log(userExist.password,password)
+        if(!isPasswordMatched)
+        {throw new Error("Invalid Credentials")}
 
-     const payload = {
+        const payload = {
         email: userExist.email,
         id:userExist._id,
         role:userExist.role,
         userName:userExist.userName
-     }
+        }
 
-     const token = jwt.sign(payload,"secretKey")
-     res.cookie('authtoken',token)
+        const token = jwt.sign(payload,"secretKey")
+        res.cookie('authtoken',token)
 
 
 
-res.status(200).json({message: "userLoggedIN Successfully", token})
-} catch(error){
+      res.status(200).json({message: "userLoggedIN Successfully", token})
+    } catch(error){
     console.log(error.message)
     res.status(400).send(error.message)
 }
@@ -116,6 +122,15 @@ const verifyOtp = async (req,res) =>{
             throw new Error("OTP does not match!");
         }
 
+        await User.findOneAndUpdate(
+            { email: email },
+            { isOtpVerified: true },
+            { new: true }
+        );
+        
+        // optional
+        await Otp.findOneAndDelete({email});
+
         res.status(200).json({message:"OTP verified", data: doesHaveOtp});
     } catch(error){
     console.log(error.message);
@@ -135,9 +150,16 @@ const resetPassword = async (req,res) =>{
             throw new Error("User is not registered");
         }
 
+        if (!doesUserExist.isOtpVerified){
+            throw new Error("OTP is not verified!");
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const data = await User.findOneAndUpdate({email},
-            {password: password},
+            {password: hashedPassword, isOtpVerified: false},
             {new: true},);
+
         res.status(200).json({message:"Password changed successfully", data});
         }catch(error){
             console.log(error.message);
